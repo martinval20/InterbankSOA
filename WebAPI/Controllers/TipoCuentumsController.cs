@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
+using WebAPI.Transfers;
 
 namespace WebAPI.Controllers
 {
@@ -18,6 +19,52 @@ namespace WebAPI.Controllers
         public TipoCuentumsController(bdSOAContext context)
         {
             _context = context;
+        }
+        //Martin Valdiviezo
+        //GET: api/TiposCuentums/ListarCuenta
+        [HttpGet("ListarCuentas")]
+        public async Task<ActionResult<IEnumerable<TipoCuentumDt1>>> GetListarCuentas()
+        {
+            if (_context.TipoCuenta == null)
+            {
+                return NotFound();
+            }
+            return await (from b in _context.TipoCuenta
+                          select new TipoCuentumDt1()
+                          {
+                              Id = b.Id,
+                              NombreTipoCuenta = b.NombreTipoCuenta
+                          }).ToListAsync();
+        }
+
+        //Martin Valdiviezo
+        //GET: api/TiposCuentums/FiltrarPorNombreCuenta
+        [HttpGet("FiltrarPorNombreCuenta")]
+        public async Task<ActionResult<IEnumerable<TipoCuentumDt1>>> GetFiltrarTipoCuentumPorNombre(string? nombreCuenta)
+        {
+            if (_context.TipoCuenta == null)
+            {
+                return NotFound();
+            }
+            if (string.IsNullOrEmpty(nombreCuenta))
+            {
+                return await (from b in _context.TipoCuenta
+                              select new TipoCuentumDt1()
+                              {
+                                  Id = b.Id,
+                                  NombreTipoCuenta = b.NombreTipoCuenta
+                              }).ToListAsync();
+            }
+            else
+            {
+                return await (from b in _context.TipoCuenta.Where(t => t.NombreTipoCuenta.Contains(nombreCuenta))
+                                   select new TipoCuentumDt1()
+                                   {
+                                       Id = b.Id,
+                                       NombreTipoCuenta = b.NombreTipoCuenta
+                                   }).ToListAsync();
+            }
+            
         }
 
         // GET: api/TipoCuentums

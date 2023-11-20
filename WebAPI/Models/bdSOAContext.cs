@@ -18,6 +18,7 @@ namespace WebAPI.Models
 
         public virtual DbSet<Cuentum> Cuenta { get; set; } = null!;
         public virtual DbSet<Empresa> Empresas { get; set; } = null!;
+        public virtual DbSet<Lugare> Lugares { get; set; } = null!;
         public virtual DbSet<Persona> Personas { get; set; } = null!;
         public virtual DbSet<TipoCuentum> TipoCuenta { get; set; } = null!;
         public virtual DbSet<TipoTransaccion> TipoTransaccions { get; set; } = null!;
@@ -99,6 +100,23 @@ namespace WebAPI.Models
                     .HasMaxLength(20)
                     .IsUnicode(false)
                     .HasColumnName("ruc");
+            });
+
+            modelBuilder.Entity<Lugare>(entity =>
+            {
+                entity.Property(e => e.Direccion)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("DIRECCION");
+
+                entity.Property(e => e.Distrito)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("DISTRITO");
+
+                entity.Property(e => e.TipoA)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Persona>(entity =>
