@@ -4,7 +4,7 @@
     {
         public string? NumeroCuenta { get; set; }
         public int? IdTipoCuenta { get; set; }
-        
         public decimal? Saldo { get; set; }
+        public string? Estado { get; set; }
     }
 }

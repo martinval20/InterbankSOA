@@ -17,6 +17,7 @@ namespace WebAPI.Models
         public string? NumeroCuenta { get; set; }
         public decimal? Saldo { get; set; }
         public string Clave { get; set; } = null!;
+        public string? Estado { get; set; }
 
         public virtual Empresa? IdEmpresaNavigation { get; set; }
         public virtual Persona? IdPersonaNavigation { get; set; }

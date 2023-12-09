@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using WebAPI.Transfers;
 
 namespace WebAPI.Controllers
 {
+    [EnableCors("WEBVUE")]
     [Route("api/[controller]")]
     [ApiController]
     public class TipoCuentumsController : ControllerBase
@@ -20,16 +22,16 @@ namespace WebAPI.Controllers
         {
             _context = context;
         }
-        //Martin Valdiviezo
+        //Martin Valdiviezo 1
         //GET: api/TiposCuentums/ListarCuenta
-        [HttpGet("ListarCuentas")]
+        [HttpGet("ListarTiposCuentas")]
         public async Task<ActionResult<IEnumerable<TipoCuentumDt1>>> GetListarCuentas()
         {
             if (_context.TipoCuenta == null)
             {
                 return NotFound();
             }
-            return await (from b in _context.TipoCuenta
+            return await (from b in _context.TipoCuenta.Where(t => t.Id<6)
                           select new TipoCuentumDt1()
                           {
                               Id = b.Id,
@@ -48,7 +50,7 @@ namespace WebAPI.Controllers
             }
             if (string.IsNullOrEmpty(nombreCuenta))
             {
-                return await (from b in _context.TipoCuenta
+                return await (from b in _context.TipoCuenta.Where(t => t.Id<6)
                               select new TipoCuentumDt1()
                               {
                                   Id = b.Id,
@@ -57,7 +59,7 @@ namespace WebAPI.Controllers
             }
             else
             {
-                return await (from b in _context.TipoCuenta.Where(t => t.NombreTipoCuenta.Contains(nombreCuenta))
+                return await (from b in _context.TipoCuenta.Where(t => t.NombreTipoCuenta.Contains(nombreCuenta) && t.Id < 6)
                                    select new TipoCuentumDt1()
                                    {
                                        Id = b.Id,

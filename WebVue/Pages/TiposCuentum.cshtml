@@ -1,0 +1,60 @@
+﻿@page
+@model CuentumModel
+<div id="app">
+    <h1>Tipos de Cuentas</h1>
+    
+    <p>Esta página listará los tipos de cuentas.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Tipo de Cuenta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in lista">
+                <td>{{item.id}}</td>
+                <td>{{item.nombreTipoCuenta}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <select v-model="cuentum.idTipoCuenta">
+        <option v-for="(value, key) in lista" :value="key">{{value.nombreTipoCuenta}}</option>
+    </select>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
+
+<script>
+    
+    new Vue({
+        el: "#app",
+        data: {
+            lista: [],
+            cuentum: {
+                id: 0,
+                idPersona: 0,
+                idTipoCuenta: 0,
+                saldo: 0,
+                numeroCuenta: "",
+                clave: "",
+                estado: "",
+            }
+        },
+        mounted: function(){
+            this.fetchlista();
+        },
+        methods: {
+            fetchlista: function () {
+                var url = "https://localhost:7228/api/TipoCuentums/ListarTiposCuentas";
+                this.$http.get(url).then(function (response) {
+                    this.lista = response.body;
+                });
+            },
+            closeModal: function (){
+                $("#mdlCuentum").modal("hide");
+            },
+        }
+    })
+ 
+</script>

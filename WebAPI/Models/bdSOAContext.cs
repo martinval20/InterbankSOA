@@ -44,6 +44,11 @@ namespace WebAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("clave");
 
+                entity.Property(e => e.Estado)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("estado");
+
                 entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
 
                 entity.Property(e => e.IdPersona).HasColumnName("id_persona");

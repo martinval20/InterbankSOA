@@ -1,0 +1,209 @@
+﻿@page
+@model CuentumModel
+<div id="app">
+    <h1>Cuentas</h1>
+    
+    <p>Esta página se utilizará para gestionar las cuentas.</p>
+    <button @@click="nuevo">Nuevo</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Numero de cuenta</th>
+                <th>Tipo Cuenta</th>
+                <th>Saldo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in lista">
+                <td>{{item.id}}</td>
+                <td>{{item.numeroCuenta}}</td>
+            
+                <td>{{item.idTipoCuenta}}</td>
+
+                <td>{{item.saldo}}</td>
+                <td>{{item.estado}}</td>
+                <td>
+                    <button class="btn btn-primary" @@click="editar(item.id)">Editar</button>
+                    <button class="btn btn-danger" @@click="eliminar(item.id)">Eliminar</button>
+                    <button class="btn btn-warning" @@click="activar(item.id)">Activar Cuenta</button>
+                    <button class="btn btn-warning" @@click="suspender(item.id)">Suspender Cuenta</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="modal" tabindex="-1" role="dialog" id="mdlCuentum">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <input type="hidden" v-model="cuentum.id" />
+                    <table class="table">
+                    <tr>
+                            <th>Id Persona:</th>
+                            <th>
+                                <input v-model="cuentum.idPersona" />
+                            </th>
+                    </tr>
+                    <tr>
+                        <th>Tipo de Cuenta: </th>
+                       <th>
+                           <select v-model="cuentum.idTipoCuenta">
+                               <option v-for="(value, key) in lista2" :value="value.id">{{value.nombreTipoCuenta}}</option>
+                           </select>
+                       </th>
+                    </tr>
+                    <tr>
+                        <th>Numero de Cuenta:</th>
+                        <th>
+                            <input v-model="cuentum.numeroCuenta" />
+                        </th>    
+                    </tr>
+                    <tr>
+                        <th>Clave:</th>
+                            <th><input type="password" v-model="cuentum.clave" /></th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @@click="guardar2" v-if="cuentum.id==0">Aperturar Cuenta</button>
+                    <button type="button" class="btn btn-primary" @@click="actualizar" v-if="cuentum.id>0">Actualizar Cuenta</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @@click="closeModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
+
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            lista: [],
+            lista2: [],
+            cuentum: {
+                id: 0,
+                idPersona: 0,
+                idTipoCuenta: 0,
+                saldo: 0,
+                numeroCuenta: "",
+                clave: "",
+                estado: "",
+                idEmpresaNavigation: null,
+                idPersonaNavigation: null,
+                idTipoCuentaNavigation: null,
+                transaccions: []
+            }
+        },
+        mounted: function () {
+            this.fetchlista();
+            this.listarTiposCuenta();
+        },
+        methods: {
+            fetchlista: function () {
+                var url = "https://localhost:7228/api/Cuentums";
+                this.$http.get(url).then(function (response) {
+                    this.lista = response.body;
+                });
+            },
+            listarTiposCuenta: function () {
+                var url = "https://localhost:7228/api/TipoCuentums/ListarTiposCuentas";
+                this.$http.get(url).then(function (response) {
+                    this.lista2 = response.body;
+                });
+            },
+            nuevo: function () {
+                this.cuentum.id = 0;
+                this.cuentum.idPersona = 0;
+                this.cuentum.idTipoCuenta = 0;
+                this.cuentum.saldo = 0;
+                this.cuentum.numeroCuenta = "";
+                this.cuentum.clave = "";
+                this.cuentum.estado = "INACTIVO";
+                $("#mdlCuentum").modal("show");
+            },
+            guardar: function () {
+                var url = "https://localhost:7228/api/Cuentums";
+                this.$http.post(url, this.cuentum).then(function (response) {
+                    this.fetchlista();
+                    $("#mdlCuentum").modal("hide");
+                });
+            },
+            guardar2: function () {
+                var url = "https://localhost:7228/api/Cuentums/AperturarCuenta2";
+                this.$http.post(url, this.cuentum).then(function (response) {
+                    this.fetchlista();
+                    $("#mdlCuentum").modal("hide");
+                });
+            },
+            editar: function (id) {
+                var url = "https://localhost:7228/api/Cuentums/"+id;
+                this.$http.get(url).then(function (response) {
+                    this.cuentum = response.body;
+                });
+                this.cuentum.id = 0;
+                this.cuentum.idPersona = 0;
+                this.cuentum.idTipoCuenta = 0;
+                this.cuentum.numeroCuenta = "";
+                this.cuentum.clave = "";
+                this.cuentum.estado = "";
+                $("#mdlCuentum").modal("show");
+            },
+            actualizar: function () {
+                var url = "https://localhost:7228/api/Cuentums/"+this.cuentum.id;
+                this.$http.put(url, this.cuentum).then(function (response) {
+                    this.fetchlista();
+                    $("#mdlCuentum").modal("hide");
+                });
+            },
+            eliminar: function (id) {
+                let confirmarEliminacion = confirm("¿Seguro que quiere eliminar esta cuenta?");
+                if ((confirmarEliminacion) == true) {
+                    var url = "https://localhost:7228/api/Cuentums/" + id;
+                    this.$http.delete(url).then(function (response) {
+                        this.fetchlista();
+                    });
+                } else {
+                    console.log("No se eliminó ningún registro");
+                };
+                    
+            },
+            activar: function (id){
+                let confirmarActivacion = confirm("¿Desea ACTIVAR esta cuenta?");
+                if ((confirmarActivacion)==true){
+                    var url = "https://localhost:7228/api/Cuentums/ActivarCuenta/"+id;
+                    this.$http.put(url, this.cuentum).then(function (response) {
+                        this.fetchlista();
+                });
+                }else{
+                    console.log("No se cambió nada");
+                };
+                
+            },
+            suspender: function (id){
+                let confirmarSuspension = confirm("¿Desea SUSPENDER esta cuenta?");
+                if((confirmarSuspension)==true){
+                    var url = "https://localhost:7228/api/Cuentums/SuspenderCuenta/" + id;
+                    this.$http.put(url, this.cuentum).then(function (response) {
+                        this.fetchlista();
+                    });
+                }else{
+                    console.log("No se realizó ningún cambio");
+                };
+            },
+            closeModal: function (){
+                $("#mdlCuentum").modal("hide");
+            },
+
+        }
+    })
+ 
+</script>
